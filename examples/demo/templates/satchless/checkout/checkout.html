@@ -2,51 +2,54 @@
 {% load i18n %}
 {% block title %}{{ block.super }} | {% trans "Delivery method" %}{% endblock %}
 
-{% block breadcrumbs %}
-<li>
-    <a href="{% url cart:details %}">1. {% trans "Cart" %}</a>
-</li>
-<li class="active">
-    2. {% trans "Delivery" %}
-</li>
-<li class="payment">
-    3. {% trans "Payment" %}
-</li>
-<li class="confirmation">
-    <span>3. {% trans "Great success!" %}</span>
-</li>
-{% endblock %}
-
 {% block content %}
-<div class="grid_16 alpha">
-<div class="container">
+    {% block breadcrumbs %}
+    <ul class="pills">
+        <li class="active">
+            <a>1. {% trans "Delivery" %}</a>
+        </li>
+        <li>
+            <a>2. {% trans "Payment" %}</a>
+        </li>
+        <li>
+            <a>3. {% trans "Confirmation" %}</a>
+        </li>
+        <li>
+            <a>4. {% trans "Great success!" %}</a>
+        </li>
+    </ul>
+    {% endblock %}
+
     {% if order %}
-    <form method="post" action="">{% csrf_token %}
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="page-header">
+            <h2>{% trans "Billing info" %}</h2>
+        </div>
+        {% with billing_form as form %}
+            {% include 'snippets/form.html' %}
+        {% endwith %}
         {{ delivery_formset.management_form }}
-        {% for form in delivery_formset.forms %}{% with form.instance as group %}
-            <h2>{% trans "Delivery group" %}{% if order.groups.count > 1 %} {{ forloop.counter }}{% endif %}:</h2>
-            <ul>
-            {% include 'satchless/checkout/snippets/delivery_group.html' %}
-            </ul>
-            <table>
-            <tbody>
-            {{ form.as_table }}
-            {{ billing_form.as_table }}
-            </tbody>
-            </table>
-        {% endwith %}{% endfor %}
-        <button class="button" type="submit">{% trans "Proceed" %}</button>
+        <div class="page-header">
+            <h2>{% trans "Delivery info" %}</h2>
+        </div>
+    {% for form in delivery_formset.forms %}{% with form.instance as group %}
+        <div class="row">
+            <div class="span8">
+                <h3>{% trans 'Group contents' %}:</h3>
+                <ul>
+                {% include 'satchless/checkout/snippets/delivery_group.html' %}
+                </ul>
+            </div>
+            <div class="span8">
+                {% include 'snippets/form.html' %}
+            </div>
+        </div>
+        <hr />
+    {% endwith %}{% endfor %}
+        <button class="btn success" type="submit">{% trans "Proceed" %}</button>
     </form>
     {% else %}
-    <p>
-    {% blocktrans %}
-    Profound emptiness is gazing at you from the bottom of the cart. You turn back swiftly and
-    <a href="/">continue shopping</a>.
-    {% endblocktrans %}
+    <p>{% blocktrans %}Profound emptiness is gazing at you from the bottom of the cart. You turn back swiftly and <a href="/">continue shopping</a>.{% endblocktrans %}</p>
     {% endif %}
-</div>
-</div>
-<div class="grid_8 omega">
-    {% include "satchless/checkout/snippets/order_preview.html" %}
-</div>
 {% endblock %}

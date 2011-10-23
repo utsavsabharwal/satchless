@@ -1,34 +1,35 @@
 {% extends 'satchless/checkout/base.html' %}
 {% load i18n %}
-{% block title %}{{ block.super }} | {% trans "Confirmation" %}{% endblock %}
-{% block body-class %}{{ block.super }} confirmation{% endblock %}
-{% block breadcrumbs %}
-<li>
-    1. {% trans "Cart" %}
-</li>
-<li>
-    2. {% trans "Delivery" %}
-</li>
-<li class="active">
-    3. {% trans "Payment" %}
-</li>
-<li class="confirmation">
-    <span>3. {% trans "Great success!" %}</span>
-</li>
-{% endblock %}
 
 {% block content %}
-<div class="grid_16 alpha">
-    <div class="container">
-        <h1>{% blocktrans with name=order.billing_first_name %}<strong>Order confirmation.{% endblocktrans %}</h1>
+{% block breadcrumbs %}
+    <ul class="pills">
+        <li>
+            <a>1. {% trans "Delivery" %}</a>
+        </li>
+        <li>
+            <a>2. {% trans "Payment" %}</a>
+        </li>
+        <li class="active">
+            <a>3. {% trans "Confirmation" %}</a>
+        </li>
+        <li>
+            <a>4. {% trans "Great success!" %}</a>
+        </li>
+    </ul>
+{% endblock %}
 
-        <form action="{{ formdata.action }}" method="{{ formdata.method }}">{% csrf_token %}
-            {{ formdata.form.as_p }}
-            <button class="button" type="submit">{% trans "Confirm" %}</button>
-        </form>
+    <div class="page-header">
+        <h2>{% trans 'Order confirmation' %}</h2>
     </div>
-</div>
-<div class="grid_8 omega">
     {% include "satchless/checkout/snippets/order_preview.html" %}
-</div>
+
+    <form action="{{ formdata.action }}" method="{{ formdata.method }}">
+        {% csrf_token %}
+        {% with formdata.form as form %}
+            {% include 'snippets/form.html' %}
+        {% endwith %}
+        <button class="btn success" type="submit">{% trans "Confirm" %}</button>
+    </form>
+
 {% endblock %}

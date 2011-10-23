@@ -1,32 +1,32 @@
 {% extends 'satchless/checkout/base.html' %}
 {% load i18n %}
-{% block title %}{{ block.super }} | {% trans "Order has been placed" %}{% endblock %}
-{% block body-class %}{{ block.super }} thank-you{% endblock %}
-{% block breadcrumbs %}
-<li>
-    1. {% trans "Cart" %}
-</li>
-<li>
-    2. {% trans "Delivery" %}
-</li>
-<li>
-    3. {% trans "Payment" %}
-</li>
-<li class="active confirmation">
-    <span>3. {% trans "Great success!" %}</span>
-</li>
-{% endblock %}
 
 {% block content %}
-<div class="grid_16 alpha">
-    <div class="container main">
-        <h1>{% blocktrans with name=order.billing_first_name %}<strong>Thank you {{ name }},</strong> your order has been placed.{% endblocktrans %}</h1>
+{% block breadcrumbs %}
+    <ul class="pills">
+        <li>
+            <a>1. {% trans "Delivery" %}</a>
+        </li>
+        <li>
+            <a>2. {% trans "Payment" %}</a>
+        </li>
+        <li>
+            <a>3. {% trans "Confirmation" %}</a>
+        </li>
+        <li class="active">
+            <a>4. {% trans "Great success!" %}</a>
+        </li>
+    </ul>
+{% endblock %}
 
-        <p><strong>{% trans 'Delivery and Tracking' %}:</strong> {% blocktrans %}Typical orders will leave our warehouse in 2–3 business days. Upon shipment you will receive your tracking number via email.{% endblocktrans %}</p>
-        <p><strong>{% trans 'Has my credit card been charged?' %}</strong> {% blocktrans %}Your credit card has been pre-approved, but will not be charged until your order has left our warehouse.{% endblocktrans %}</p>
+    <div class="page-header">
+        <h2>{% blocktrans with name=order.billing_first_name %}<strong>Thank you {{ name }},</strong> your order has been placed.{% endblocktrans %}</h2>
     </div>
-</div>
-<div class="grid_8 omega">
+
+    <p><strong>{% trans 'Delivery and Tracking' %}:</strong> {% blocktrans %}Typical orders will leave our warehouse in 2–3 business days. Upon shipment you will receive your tracking number via email.{% endblocktrans %}</p>
+    <p><strong>{% trans 'Has my credit card been charged?' %}</strong> {% blocktrans %}Your credit card has been pre-approved, but will not be charged until your order has left our warehouse.{% endblocktrans %}</p>
+
+    <hr />
+
     {% include "satchless/checkout/snippets/order_preview.html" %}
-</div>
 {% endblock %}

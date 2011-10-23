@@ -1,5 +1,12 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block body-class %}{{ block.super }} home-page{% endblock %}
 {% block content %}
-<img src="{{ STATIC_URL }}img/frontpage.png" />
+<div class="banner">
+    <div class="page-header">
+        <h1>{% trans 'Welcome to the demo store' %}</h1>
+    </div>
+    <p>{% blocktrans %}The purpose of this site is to provide a live playground for <a href="http://satchless.com/">Satchless</a>.{% endblocktrans %}</p>
+    <p>{% blocktrans %}If the list of categories on the left is empty, head over to the <a href="/admin/">admin panel</a> and get started by creating some categories and products.{% endblocktrans %}</p>
+</div>
 {% endblock %}

@@ -8,39 +8,26 @@
 {% block title %}{% trans "Shopping Bag" %} || {{ block.super }}{% endblock %}
 {% block body-class %}{{ block.super }} cart{% endblock %}
 
-{% block breadcrumbs %}
-    <li class="active">
-        1. {% trans "Cart" %}
-    </li>
-    <li>
-        2. {% trans "Delivery" %}
-    </li>
-    <li>
-        3. {% trans "Payment" %}
-    </li>
-    <li class="confirmation">
-        <span>3. {% trans "Great success!" %}</span>
-    </li>
-{% endblock %}
-
 {% block content %}
-
 {% if cart_item_forms %}
     <table class="cart-contents">
-        <col class="image" />
-        <col class="name" />
-        <col class="price" />
-        <col class="qty" />
-        <col class="total" />
         <thead>
             <tr>
-                <th class="image"></th>
-                <th class="name">{% trans "Description" %}</th>
+                <th class="name">{% trans 'Product' %}</th>
                 <th class="price">{% trans 'Unit Price' %}</th>
                 <th class="qty">{% trans 'Quantity' %}</th>
                 <th class="total">{% trans 'Total' %}</th>
             </tr>
         </thead>
+        <tfoot>
+            <tr class="checkout">
+                <th colspan="3">{% trans 'Total' %}:</th>
+                <td>
+                    <span class="fullprice">{{ cart.total|gross|floatformat:2 }}</span>
+                    <span class="currency">{{ cart.currency }}</span><br />
+                </td>
+            </tr>
+        </tfoot>
         <tbody>
     {% for form in cart_item_forms %}
         {% with form.instance as cart_item %}
@@ -55,26 +42,14 @@
         {% endwith %}
     {% endfor %}
         </tbody>
-        <tfoot>
-            <tr class="checkout">
-                <td class="product-price" colspan="5">
-                    <span class="fullprice">{{ cart.total|gross|floatformat:2 }}</span>
-                    <span class="currency">{{ cart.currency }}</span><br />
-                </td>
-            </tr>
-            <tr class="checkout">
-                <td colspan="5">
-                <form action="{% url checkout:prepare-order %}" method="post">
-                    {% csrf_token %}
-                    <button class="button" type="submit"><span>{% trans "Go to checkout" %}</span></button>
-                </form>
-                </td>
-            </tr>
-        </tfoot>
     </table>
+    <form action="{% url checkout:prepare-order %}" method="post">
+        {% csrf_token %}
+        <button class="btn success" type="submit"><span>{% trans "Proceed to checkout" %}</span></button>
+    </form>
 {% else %}
-<p class="no-items">
-    {% trans "Your shopping bag is empty." %}
-</p>
+    <p>
+        {% trans "Your shopping cart is empty." %}
+    </p>
 {% endif %}
 {% endblock %}

@@ -20,11 +20,9 @@
 
 {% block breadcrumbs %}
 {% if path %}
-<ul id="breadcrumbs">{% spaceless %}
     {% for category in path %}
-    <li class="{% if forloop.first %}first{% endif %}{% if forloop.last %} active{% endif %}"><a href="/">{{ category }}</a></li>
+    <li><a href="/">{{ category }}</a>{% if not forloop.last %} <span class="divider">/</span>{% endif %}</li>
     {% endfor %}
-{% endspaceless %}</ul>
 {% endif %}
 {% endblock %}
 

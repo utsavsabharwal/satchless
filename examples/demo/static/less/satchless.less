@@ -1,0 +1,49 @@
+.container
+{
+    &.main {
+        padding-top: 60px;
+    }
+}
+
+.banner {
+    .border-radius();
+    #gradient > .vertical(#004D9F, #049cd9);
+    color: #fff;
+    padding: 40px;
+    a {
+        color: @white;
+        text-decoration: underline;
+    }
+    h1 {
+        color: @white;
+    }
+}
+
+.cart-contents {
+    td {
+        span.quantity {
+            input {
+                width: 40px;
+            }
+        }
+    }
+}
+
+table {
+    tfoot {
+        th {
+            border-bottom: none;
+            span {
+                font-weight: normal;
+            }
+        }
+        th + td,
+        td + th {
+            border-left: 1px solid #ddd;
+        }
+        tr td,
+        tr th {
+            border-top: 1px solid #ddd;
+        }        
+    }
+}

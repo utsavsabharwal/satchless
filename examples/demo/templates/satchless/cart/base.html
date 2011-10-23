@@ -1,2 +1,11 @@
 {% extends 'satchless/base.html' %}
-{% block body-class %}{{ block.super }} checkout{% endblock %}
+{% load i18n %}
+{% block main-content %}
+<div class="span16">
+    <div class="page-header">
+        <h1>{% trans 'Your shopping cart' %}</h1>
+    </div>
+    {% block content %}
+    {% endblock %}
+</div>
+{% endblock %}

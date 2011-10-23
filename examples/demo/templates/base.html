@@ -6,137 +6,124 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>{% block title %}Satchless Demo Store{% endblock %}</title>
     <meta name="description" content="{% block meta-description %}{% trans "For Python perfectionists with real deadlines" %}{% endblock %}" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/reset.css" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/grid.css" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css" />
+    <link rel="stylesheet/less" href="{{ STATIC_URL }}less/bootstrap.less">
+    <script src="{{ STATIC_URL }}js/less-1.1.3.min.js"></script>
 </head>
 
 <body id="{% block body-id %}{% endblock %}" class="{% block body-class %}{% endblock %}">
 
-{% block top-bar %}
-    <div id="header" class="container_24">
-        <a class="logo grid_3" href="{% url home-page %}"><img src="{{ STATIC_URL }}img/logo.png" alt="{% trans "Satchless Demo" %}" /></a>
-        <ul class="menu grid_15">
-{% for category in root_categories %}
-            <li>
-                <a href="{{ category.get_absolute_url }}">{{ category }}</a>
-                <ul class="submenu">
-    {% for child in category.get_children %}
-                    <li><a href="{{ child.get_absolute_url }}">{{ child }}</a></li>
-    {% endfor %}
+<div class="topbar">
+    <div class="topbar-inner">
+        <div class="container">
+            <h3><a href="{% url home-page %}">{% trans 'Demo Store' %}</a></h3>
+            <ul clas="nav">
+                <li>
+                    <a href="{% url sale %}">Sale</a>
+                </li>
+                <li>
+                    <a href="{# url sale #}">About us</a>
+                </li>
+                <li>
+                    <a href="{# url sale #}">Contact</a>
+                </li>
+            </ul>
+            <div class="pull-right">
+                <ul class="nav">
+                {% for lang in LANGUAGES %}
+                    <li class="{% if lang.0 == LANGUAGE_CODE %}active{% endif %}"><a href="{{ request.path|chlocale:lang.0 }}">{{ lang.1 }}</a></li>
+                {% endfor %}
                 </ul>
-            </li>
-{% endfor %}
-            <li class="sale">
-                <a href="{% url sale %}">SALE</a>
-            </li>
-            <li class="about-us">
-                <a href="{# url sale #}">About us</a>
-            </li>
-            <li class="contact">
-                <a href="{# url sale #}">Contact</a>
-            </li>
-        </ul>
-        <div class="shortcuts grid_6">
-            <form class="search" method="get" action="{% url satchless-search-haystack-predictive %}"><input class="q" type="text" name="q" value="{{ request.GET.keywords }}" /><input class="submit" type="submit" value="Search" /></form>
-            <ul class="languages">{% spaceless %}
-{% for lang in LANGUAGES %}
-                <li class="{% if forloop.first %}first{% endif %}">{% if lang.0  == LANGUAGE_CODE %}{{ lang.1 }}{% else %}<a href="{{ request.path|chlocale:lang.0 }}">{{ lang.1 }}</a>{% endif %}</li>
-{% endfor %}
-            {% endspaceless %}</ul>
-            <div class="carts">
-                <a class="wishlist" href="{% url wishlist:details %}">{{ wishlist_size|floatformat:0 }}<img src="{{ STATIC_URL }}img/icons/wishlist.png" alt="wishlist" /></a>
-                <a href="{% url cart:details %}">{{ cart_size|floatformat:0 }}<img src="{{ STATIC_URL }}img/icons/cart.png" alt="cart" /></a>
+                <ul class="nav">
+                    <li><a href="{% url wishlist:details %}">{% trans 'Wishlist' %}: {{ wishlist_size|floatformat:0 }}</a></li>
+                    <li><a href="{% url cart:details %}">{% trans 'Cart' %}: {{ cart_size|floatformat:0 }}</a></li>
+                </ul>
+                <form method="get" action="{% url satchless-search-haystack-predictive %}">
+                    <input class="medium" type="text" name="q" placeholder="{% trans 'Search…' %}" value="{{ request.GET.keywords }}" />
+                </form>
             </div>
         </div>
-        <div class="grid_24">
-            <hr/>
+    </div>
+</div>
+<div class="container main">
+    {% if messages %}
+    <div class="row">
+        <div class="span16">
+            <div id="messages" class="row">
+            {% for m in messages %}
+                <div class="alert-message {{ m.tags }}">
+                    <a class="close" href="#">×</a>
+                    <p>{{ m|safe }}</p>
+                </div>
+            {% endfor %}
+            </div>
         </div>
-        <div class="clear"></div>
-    <div>
-{% if messages %}
-        <div id="messages" class="grid_10"><span class="tip"></span>
-    {% for m in messages %}
-            <div class="message {{ m.tags }}">{{ m|safe }}</div>
+    </div>
+    {% endif %}
+    <div class="row">
+{% block main-content %}
+        <div class="span4">
+{% block sidebar %}
+            <h3>{% trans 'Categories' %}</h3>
+            <ul>
+    {% for category in root_categories %}
+                <li>
+                    <a href="{{ category.get_absolute_url }}">{{ category }}</a>
+                    <ul class="submenu">
+        {% for child in category.get_children %}
+                        <li><a href="{{ child.get_absolute_url }}">{{ child }}</a></li>
+        {% endfor %}
+                    </ul>
+                </li>
     {% endfor %}
+            </ul>
+{% endblock %}
         </div>
-{% endif %}
+        <div class="span12">
+            {% block breadcrumbs %}
+            {% endblock %}
+            {% block content %}
+            {% endblock %}
+        </div>
+{% endblock %}
     </div>
 
-    </div> {# #header #}
-{% endblock %}
-
-<div id="breadcrumbs" class="container_24">
-    <ul class="grid_24 {% block breadcrumbs-class %}{% endblock %}">
-{% block breadcrumbs %}
-{% endblock %}
-    </ul>
-    <div class="clear"></div>
-</div>
-
-<div id="content" class="container_24">
-    <div class="grid_24">
-{% block content %}
-{% endblock %}
-    <div class="clear"></div>
-    </div>
-</div> {# #content #}
-
-<div id="content" class="container_24">
-<div class="grid_24 footer">
-    <div class="info">
-        <div class="contact">
-            IF YOU NEED GREAT, FAST & MODERN ECOMMERCE SOLUTION OR CONSULTING <a href="http://mirumee.com/contact">TALK TO US</a><br />
-            <span class="quality">Best quality guarantee</span>
-        </div>
-        <div class="copyright">
-            Copyright © 2009-2011 Mirumee Labs. <br />
-            <a href="http://mirumee.com"><img class="motto" src="{{ STATIC_URL }}img/motto.png" alt="Mirumee Software - We build WebApps. Better" /></a>
+    <div class="row">
+        <div class="span16">
+            <hr />
+            <p>Copyright © 2009–2011 <a href="http://mirumee.com/">Mirumee Software</a>. If you need a great, fast &amp; modern e-commerce solution — <a href="http://mirumee.com/contact">talk to us</a>.</p>
         </div>
     </div>
-</div>
 
 {% if debug %}
-<div id="debug" class="container_24">
-  <h2>Queries</h2>
-  <p>
-    {{ sql_queries|length }} Quer{{ sql_queries|pluralize:"y,ies" }}
-    {% ifnotequal sql_queries|length 0 %}
-    (<span style="cursor: pointer;" onclick="var s=document.getElementById('debugQueryTable').style;s.display=s.display=='none'?'':'none';this.innerHTML=this.innerHTML=='Show'?'Hide':'Show';">Show</span>)
-    {% endifnotequal %}
-  </p>
-  <table id="debugQueryTable" style="display: none;">
-    <col width="1"></col>
-    <col></col>
-    <col width="1"></col>
-    <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">SQL</th>
-      <th scope="col">Time</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for query in sql_queries %}<tr class="{% cycle odd,even %}">
-      <td>{{ forloop.counter }}</td>
-      <td>{{ query.sql|escape }}</td>
-      <td>{{ query.time }}</td>
-    </tr>{% endfor %}
-    </tbody>
-  </table>
-</div>
+    <div class="row">
+        <div class="span16">
+            <hr />
+            <h3>Queries</h3>
+            <p>
+                {{ sql_queries|length }} Quer{{ sql_queries|pluralize:"y,ies" }}
+                {% if sql_queries|length != 0 %}
+                (<span style="cursor: pointer;" onclick="var s=document.getElementById('debugQueryTable').style;s.display=s.display=='none'?'':'none';this.innerHTML=this.innerHTML=='Show'?'Hide':'Show';">Show</span>)
+                {% endif %}
+            </p>
+            <table id="debugQueryTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">SQL</th>
+                        <th scope="col">Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for query in sql_queries %}<tr class="{% cycle odd,even %}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ query.sql|escape }}</td>
+                        <td>{{ query.time }}</td>
+                    </tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endif %}
-{% block extra-body %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
-<script>
-    $(function() {
-        $('#messages').fadeIn('slow');
-        var hide = setTimeout("hideCallback()", 6000);
-    });
-    var hideCallback = function() {
-        $('#messages').fadeOut('slow');
-    }
-</script>
-{% endblock %}
+</div>
 </body>
 </html>

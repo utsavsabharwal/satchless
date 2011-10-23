@@ -6,35 +6,34 @@
 {% load products_tags %}
 {% load satchless_image %}
 
-{% block title %}{{ block.super }} | {% trans "Payment" %}{% endblock %}
 {% block body-class %}{{ block.super }} payment-choice{% endblock %}
-{% block breadcrumbs %}
-<li>
-    <a href="{% url cart:details %}">1. {% trans "Cart" %}</a>
-</li>
-<li>
-    <a href="{% url checkout:checkout order.token %}">2. {% trans "Delivery" %}</a>
-</li>
-<li class="active">
-    3. {% trans "Payment" %}
-</li>
-<li class="confirmation">
-    <span>3. {% trans "Great success!" %}</span>
-</li>
-{% endblock %}
 
 {% block content %}
-<div class="grid_16 alpha">
-<div class="container">
-    <h1>{% trans "Choose payment method" %}</h1>
-    <form action="" method="post">{% csrf_token %}
-        {{ payment_form.as_p }}
-        <button type="submit" class="button">{% trans "Proceed" %}</button>
+{% block breadcrumbs %}
+    <ul class="pills">
+        <li>
+            <a>1. {% trans "Delivery" %}</a>
+        </li>
+        <li class="active">
+            <a>2. {% trans "Payment" %}</a>
+        </li>
+        <li>
+            <a>3. {% trans "Confirmation" %}</a>
+        </li>
+        <li>
+            <a>4. {% trans "Great success!" %}</a>
+        </li>
+    </ul>
+{% endblock %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="page-header">
+            <h2>{% trans "Payment info" %}</h2>
+        </div>
+        {% with payment_form as form %}
+            {% include 'snippets/form.html' %}
+        {% endwith %}
+        <button class="btn success" type="submit">{% trans "Proceed" %}</button>
     </form>
-    {# {% include 'satchless/checkout/snippets/order_view.html' %} #}
-</div>
-</div>
-<div class="grid_8 omega">
-    {% include "satchless/checkout/snippets/order_preview.html" %}
-</div>
 {% endblock %}
