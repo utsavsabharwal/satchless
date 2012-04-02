@@ -7,7 +7,21 @@ from ..util.models import Subtyped
 
 __all__ = ('Product', 'Variant')
 
-class Product(Subtyped):
+class BaseProduct(object):
+
+    quantity_quantizer = decimal.Decimal(1)
+    quantity_rounding = decimal.ROUND_HALF_UP
+
+    def quantize_quantity(self, quantity):
+        """
+        Returns sanitized quantity. By default it rounds the value to the
+        nearest integer.
+        """
+        return decimal.Decimal(quantity).quantize(
+                self.quantity_quantizer, rounding=self.quantity_rounding)
+
+
+class Product(Subtyped, BaseProduct):
     """
     The base Product to rule them all. Provides slug, a powerful item to
     identify member of each tribe.
@@ -20,9 +34,6 @@ class Product(Subtyped):
                                         ' hyphens and underscores only) and'
                                         ' descriptive for the SEO needs.'))
 
-    quantity_quantizer = decimal.Decimal(1)
-    quantity_rounding = decimal.ROUND_HALF_UP
-
     class Meta:
         abstract = True
 
@@ -32,14 +43,6 @@ class Product(Subtyped):
     @models.permalink
     def get_absolute_url(self):
         return 'product:details', (self.pk, self.slug)
-
-    def quantize_quantity(self, quantity):
-        """
-        Returns sanitized quantity. By default it rounds the value to the
-        nearest integer.
-        """
-        return decimal.Decimal(quantity).quantize(self.quantity_quantizer,
-                                                  rounding=self.quantity_rounding)
 
 
 class Variant(Subtyped):
