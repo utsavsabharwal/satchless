@@ -1,3 +1,4 @@
+from django.core.exceptions import FieldError
 from django.db.models import Min, Max
 from ....pricing import Price, PriceRange, PricingHandler
 
@@ -55,8 +56,11 @@ class VariantFieldGetter(FieldGetter):
             return price_range
         cur = currency.lower() if currency else ''
         field_name = self.field_name % {'currency': cur}
-        minmax = product.variants.all().aggregate(min_price=Min(field_name),
-                                                  max_price=Max(field_name))
+        try:
+            minmax = product.variants.all().aggregate(min_price=Min(field_name),
+                                                      max_price=Max(field_name))
+        except FieldError:
+            return price_range
         min_price = Price(minmax['min_price'], minmax['min_price'],
                           currency=currency)
         max_price = Price(minmax['max_price'], minmax['max_price'],
