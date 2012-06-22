@@ -1,13 +1,14 @@
 from django.db.models import Min, Max
 from ....pricing import Price, PriceRange, PricingHandler
 
-class FieldGetter(object):
+class FieldGetter(PricingHandler):
     def __init__(self, field_name='price', currency=None):
         self.currency = currency
         self.field_name = field_name
 
 
-class ProductFieldGetter(FieldGetter, PricingHandler):
+class ProductFieldGetter(FieldGetter):
+    '''PricingHandler extracting price from variant instance field'''
     def get_variant_price(self, variant, currency, quantity=1, **kwargs):
         price = kwargs.pop('price')
         if self.currency and self.currency != currency:
@@ -35,7 +36,7 @@ class ProductFieldGetter(FieldGetter, PricingHandler):
         return PriceRange(min_price=min_price, max_price=max_price)
 
 
-class VariantFieldGetter(FieldGetter, PricingHandler):
+class VariantFieldGetter(FieldGetter):
     def get_variant_price(self, variant, currency, quantity=1, **kwargs):
         price = kwargs.pop('price')
         if self.currency and self.currency != currency:
