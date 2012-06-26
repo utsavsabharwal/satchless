@@ -11,7 +11,7 @@ from satchless.util.models import construct
 import satchless
 import satchless.product.models
 
-from ..categories.models import Category
+from categories.models import Category
 
 
 class Product(ProductPriceMixin, TaxedProductMixin,
@@ -26,15 +26,15 @@ class Variant(satchless.product.models.Variant, VariantPriceOffsetMixin):
     pass
 
 
-class OnlineVariant(Variant):
-    file = models.FileField()
+class OnlineVariantMixin(models.Model):
+    file = models.FileField(upload_to='/tmp')
     file_format = models.CharField(max_length=4)
 
     class Meta:
         abstract = True
 
 
-class OfflineVariant(Variant):
+class OfflineVariantMixin(models.Model):
     stock = models.PositiveIntegerField()
 
     class Meta:
@@ -54,11 +54,11 @@ class BookVariant(Variant):
         abstract = True
 
 
-class EBookVariant(BookVariant, OnlineVariant):
+class EBookVariant(BookVariant, OnlineVariantMixin):
     pass
 
 
-class TraditionalBookVariant(BookVariant, OfflineVariant):
+class TraditionalBookVariant(BookVariant, OfflineVariantMixin):
     hard_cover = models.BooleanField(default=False)
 
 
@@ -74,17 +74,17 @@ class MovieVariant(Variant):
         abstract = True
 
 
-class OnlineMovieVariant(MovieVariant, OnlineVariant):
+class OnlineMovieVariant(MovieVariant, OnlineVariantMixin):
     with_adverts = models.BooleanField(default=False)
 
 
-class TraditionalMovie(MovieVariant, OfflineVariant):
+class TraditionalMovie(MovieVariant, OfflineVariantMixin):
     CARRIERS = (
         ('vhs', 'VHS'),
         ('dvd', 'DVD'),
         ('br', 'BlueRay'),
     )
-    carrier = models.CharField(choices=CARRIERS)
+    carrier = models.CharField(choices=CARRIERS, max_length=5)
 
 
 class Music(Product):
@@ -99,13 +99,13 @@ class MusicVariant(Variant):
         abstract = True
 
 
-class MusicFileVariant(MusicVariant, OnlineVariant):
+class MusicFileVariant(MusicVariant, OnlineVariantMixin):
     duration = models.IntegerField()
 
 
-class MusicAlbumVariant(MusicVariant, OfflineVariant):
+class MusicAlbumVariant(MusicVariant, OfflineVariantMixin):
     CARRIERS = (
         ('dvd', 'DVD'),
         ('br', 'BlueRay'),
         ('cd', 'Audio CD'))
-    carrier = models.CharField(choices=CARRIERS)
+    carrier = models.CharField(choices=CARRIERS, max_length=5)
