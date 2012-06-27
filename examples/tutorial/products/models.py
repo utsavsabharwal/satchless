@@ -1,38 +1,33 @@
 # -*- coding:utf-8 -*-
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from satchless.category.models import CategorizedProductMixin
-from satchless.contrib.pricing.simpleqty.models import ProductPriceMixin,\
-    VariantPriceOffsetMixin
+from satchless.contrib.pricing.simpleqty.models import (ProductPriceMixin,
+    VariantPriceOffsetMixin)
 from satchless.contrib.tax.flatgroups.models import TaxedProductMixin
 from satchless.util.models import construct
-import satchless
 import satchless.product.models
 
 from categories.models import Category
 
-
-class Product(ProductPriceMixin, TaxedProductMixin,
+class Product(satchless.product.models.Product,
+              ProductPriceMixin, TaxedProductMixin,
               construct(CategorizedProductMixin, category=Category)):
 
     name = models.CharField(_('name'), max_length=128)
-    slug = models.SlugField(_('slug'), max_length=128)
     description = models.TextField(_('description'), blank=True)
 
-
 class Variant(satchless.product.models.Variant, VariantPriceOffsetMixin):
-    pass
-
+    def __unicode__(self):
+        return u''
 
 class OnlineVariantMixin(models.Model):
-    file = models.FileField(upload_to='/tmp')
+    file = models.FileField(upload_to='tmp')
     file_format = models.CharField(max_length=4)
 
     class Meta:
         abstract = True
-
 
 class OfflineVariantMixin(models.Model):
     stock = models.PositiveIntegerField()
@@ -40,12 +35,10 @@ class OfflineVariantMixin(models.Model):
     class Meta:
         abstract = True
 
-
 class Book(Product):
     isbn = models.CharField(max_length=13)
     author = models.CharField(max_length=50)
-    publication_date = models.DateField(blank=True)
-
+    publication_date = models.DateField(blank=True, null=True)
 
 class BookVariant(Variant):
     book = models.ForeignKey(Book)
@@ -53,19 +46,15 @@ class BookVariant(Variant):
     class Meta:
         abstract = True
 
-
 class EBookVariant(BookVariant, OnlineVariantMixin):
     pass
-
 
 class TraditionalBookVariant(BookVariant, OfflineVariantMixin):
     hard_cover = models.BooleanField(default=False)
 
-
 class Movie(Product):
     director = models.CharField(max_length=50)
-    premiere_date = models.DateField(blank=True)
-
+    premiere_date = models.DateField(blank=True, null=True)
 
 class MovieVariant(Variant):
     movie = models.ForeignKey(Movie)
@@ -73,12 +62,10 @@ class MovieVariant(Variant):
     class Meta:
         abstract = True
 
-
 class OnlineMovieVariant(MovieVariant, OnlineVariantMixin):
     with_adverts = models.BooleanField(default=False)
 
-
-class TraditionalMovie(MovieVariant, OfflineVariantMixin):
+class TraditionalMovieVariant(MovieVariant, OfflineVariantMixin):
     CARRIERS = (
         ('vhs', 'VHS'),
         ('dvd', 'DVD'),
@@ -86,11 +73,9 @@ class TraditionalMovie(MovieVariant, OfflineVariantMixin):
     )
     carrier = models.CharField(choices=CARRIERS, max_length=5)
 
-
 class Music(Product):
     author = models.CharField(max_length=50)
     publisher = models.CharField(max_length=50)
-
 
 class MusicVariant(Variant):
     music = models.ForeignKey(Music)
@@ -98,10 +83,8 @@ class MusicVariant(Variant):
     class Meta:
         abstract = True
 
-
 class MusicFileVariant(MusicVariant, OnlineVariantMixin):
     duration = models.IntegerField()
-
 
 class MusicAlbumVariant(MusicVariant, OfflineVariantMixin):
     CARRIERS = (

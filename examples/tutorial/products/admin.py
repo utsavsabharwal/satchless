@@ -1,24 +1,40 @@
 # -*- coding:utf-8 -*-
-from django import forms
 from django.contrib import admin
-from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.db.models import Q
-from django.forms.models import modelform_factory
-from django.utils.translation import ugettext_lazy as _, ugettext
-import django.db.models
+from products import models
 
-from products.models import Book, Movie, Music
+class ProductAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('name',)}
 
-class BookAdmin(admin.ModelAdmin):
-    pass
+#Book model and variants
+class TraditionalBookVariantInline(admin.TabularInline):
+    model = models.TraditionalBookVariant
 
-class MovieAdmin(admin.ModelAdmin):
-    pass
+class EBookVariantInline(admin.TabularInline):
+    model = models.EBookVariant
 
-class MusicAdmin(admin.ModelAdmin):
-    pass
+class BookAdmin(ProductAdmin):
+    inlines = [TraditionalBookVariantInline, EBookVariantInline]
 
-admin.site.register(Book, BookAdmin)
-admin.site.register(Movie, MovieAdmin)
-admin.site.register(Music, MusicAdmin)
+#Movie model and variants
+class OnlineMovieVariantInline(admin.TabularInline):
+    model = models.OnlineMovieVariant
+
+class TraditionalMovieVariantInline(admin.TabularInline):
+    model = models.TraditionalMovieVariant
+
+class MovieAdmin(ProductAdmin):
+    inlines = [OnlineMovieVariantInline, TraditionalMovieVariantInline]
+
+#Music model and variant
+class MusicFileVariantInline(admin.TabularInline):
+    model = models.MusicFileVariant
+
+class MusicAlbumVariantInline(admin.TabularInline):
+    model = models.MusicAlbumVariant
+
+class MusicAdmin(ProductAdmin):
+    inlines = [MusicFileVariantInline, MusicAlbumVariantInline]
+
+admin.site.register(models.Book, BookAdmin)
+admin.site.register(models.Movie, MovieAdmin)
+admin.site.register(models.Music, MusicAdmin)
