@@ -11,7 +11,12 @@
     <h2>Variants</h2>
     <ul>
     {% for variant in variants %}
-        <li>{{ variant }}</li>
+        {%  with price=variant.get_price %}
+        <li>
+            {{ variant }}
+            ({{ price.gross }}{% if price.currency %} {{ price.currency }}{%  endif %})
+        </li>
+        {%  endwith %}
     {% endfor %}
     </ul>
 {% endblock %}

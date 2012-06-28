@@ -49,10 +49,16 @@ class Book(Product):
     publication_date = models.DateField(blank=True, null=True)
 
 class EBookVariant(Variant, OnlineVariantMixin):
-    pass
+    def __unicode__(self):
+        return u"eBook (%s)" % self.file_format
 
 class TraditionalBookVariant(Variant, OfflineVariantMixin):
     hard_cover = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return u"Book %(with)s hard cover" % {
+            'with' : 'with' if self.hard_cover else 'without',
+        }
 
 class Movie(Product):
     director = models.CharField(max_length=50)

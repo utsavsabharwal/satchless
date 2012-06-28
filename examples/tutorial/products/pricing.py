@@ -22,8 +22,8 @@ class VariantOffsetHandler(PricingHandler):
     def get_variant_price(self, variant, currency, quantity=1, price=Price(0),
                           **kwargs):
         try:
-            return price + variant.price_offset
-        except TypeError:
+            return price + Price(variant.price_offset)
+        except TypeError, e:
             return price
 
     def get_product_price_range(self, product, currency,
