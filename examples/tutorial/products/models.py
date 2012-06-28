@@ -21,8 +21,10 @@ class Product(satchless.product.models.Product,
     description = models.TextField(_('description'), blank=True)
 
 class Variant(satchless.product.models.Variant, VariantPriceOffsetMixin):
+    product = models.ForeignKey(Product)
+
     def __unicode__(self):
-        return u''
+        return u'offset %s'%self.price_offset
 
     def get_price(self, quantity=1):
         return pricing.get_price(self, quantity)
@@ -46,32 +48,20 @@ class Book(Product):
     author = models.CharField(max_length=50)
     publication_date = models.DateField(blank=True, null=True)
 
-class BookVariant(Variant):
-    book = models.ForeignKey(Book)
-
-    class Meta:
-        abstract = True
-
-class EBookVariant(BookVariant, OnlineVariantMixin):
+class EBookVariant(Variant, OnlineVariantMixin):
     pass
 
-class TraditionalBookVariant(BookVariant, OfflineVariantMixin):
+class TraditionalBookVariant(Variant, OfflineVariantMixin):
     hard_cover = models.BooleanField(default=False)
 
 class Movie(Product):
     director = models.CharField(max_length=50)
     premiere_date = models.DateField(blank=True, null=True)
 
-class MovieVariant(Variant):
-    movie = models.ForeignKey(Movie)
-
-    class Meta:
-        abstract = True
-
-class OnlineMovieVariant(MovieVariant, OnlineVariantMixin):
+class OnlineMovieVariant(Variant, OnlineVariantMixin):
     with_adverts = models.BooleanField(default=False)
 
-class TraditionalMovieVariant(MovieVariant, OfflineVariantMixin):
+class TraditionalMovieVariant(Variant, OfflineVariantMixin):
     CARRIERS = (
         ('vhs', 'VHS'),
         ('dvd', 'DVD'),
@@ -83,16 +73,10 @@ class Music(Product):
     author = models.CharField(max_length=50)
     publisher = models.CharField(max_length=50)
 
-class MusicVariant(Variant):
-    music = models.ForeignKey(Music)
-
-    class Meta:
-        abstract = True
-
-class MusicFileVariant(MusicVariant, OnlineVariantMixin):
+class MusicFileVariant(Variant, OnlineVariantMixin):
     duration = models.IntegerField()
 
-class MusicAlbumVariant(MusicVariant, OfflineVariantMixin):
+class MusicAlbumVariant(Variant, OfflineVariantMixin):
     CARRIERS = (
         ('dvd', 'DVD'),
         ('br', 'BlueRay'),
