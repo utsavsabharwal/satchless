@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    {% if product.description %}
+    <div class="productDescription">
+        {{ product.description }}
+    </div>
+    {% endif %}
+    <h2>Variants</h2>
+    <ul>
+    {% for variant in variants %}
+        <li>{{ variant }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

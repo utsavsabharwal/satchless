@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div id="product">
+        <ul>
+            {% for product in products %}
+            <li><a href="{{ product.get_absolute_url }}">{{ product }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock content %}
