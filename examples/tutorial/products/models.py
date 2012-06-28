@@ -11,6 +11,8 @@ import satchless.product.models
 
 from categories.models import Category
 
+from . import pricing
+
 class Product(satchless.product.models.Product,
               ProductPriceMixin, TaxedProductMixin,
               construct(CategorizedProductMixin, category=Category)):
@@ -21,6 +23,10 @@ class Product(satchless.product.models.Product,
 class Variant(satchless.product.models.Variant, VariantPriceOffsetMixin):
     def __unicode__(self):
         return u''
+
+    def get_price(self, quantity=1):
+        return pricing.get_price(self, quantity)
+
 
 class OnlineVariantMixin(models.Model):
     file = models.FileField(upload_to='tmp')
