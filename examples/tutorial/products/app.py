@@ -4,6 +4,7 @@ from satchless.product.app import ProductApp
 from satchless.core.app import view
 
 from . import models
+from handler import VariantsHandler
 from products.models import Product, Variant
 
 from django.template.response import TemplateResponse
@@ -24,13 +25,10 @@ class ProductsApp(ProductApp):
     @view(r'^\+(?P<product_pk>[0-9]+)-(?P<product_slug>[a-z0-9_-]+)/$',
           name='details')
     def product_details(self, request, **kwargs):
+        self.register_product_view_handler(VariantsHandler(self))
         tmpl_resp = super(ProductsApp, self).product_details(request, **kwargs)
-        
-        product = tmpl_resp.context_data['product']
-        variants = [variant.get_subtype_instance() for variant in
-                    self.Variant.objects.filter(product = product)]
 
-        tmpl_resp.context_data['variants'] = variants
+        product = tmpl_resp.context_data['product']
         tmpl_resp.template_name = 'product/%s.html'%product._meta.module_name
 
         return tmpl_resp
