@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from examples.tutorial.products.models import Variant
 from satchless.cart.app import MagicCartApp
 from satchless.core.app import view
+from products.app import products_app
 
 
 class CartApp(MagicCartApp):
@@ -29,3 +30,6 @@ class CartApp(MagicCartApp):
         variant = variant.get_subtype_instance()
         cart.add_item(variant, quantity)
         return redirect(redirect_url)
+
+
+cart_app = CartApp(product_app=products_app)
