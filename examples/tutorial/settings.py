@@ -123,7 +123,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'products',
     'categories',
-    
+    'carts',
     'satchless.contrib.tax.flatgroups',
     
 )
