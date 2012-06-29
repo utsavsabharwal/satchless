@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% load i18n %}
+{% load cart_variants %}
 
 {% block content %}
     <h1>{{ product.name }}</h1>
@@ -19,4 +20,5 @@
         {%  endwith %}
     {% endfor %}
     </ul>
+    {% variants_to_cart_forms variants product %}
 {% endblock %}

@@ -1,0 +1,7 @@
+{% for form in forms %}
+<form method="post" action="{{ action }}">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" class="btn" />
+</form>
+{% endfor %}
