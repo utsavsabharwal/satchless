@@ -11,3 +11,8 @@ def variants_to_cart_forms(context, variants, product):
     #resolved link from cart app
     action = ''
     return {'forms': forms.values(), 'action':action}
+
+@register.inclusion_tag('cart/_variants_list.html')
+def variants_to_list(variants, product):
+    action = ''
+    return {'variants':variants, 'action':action}

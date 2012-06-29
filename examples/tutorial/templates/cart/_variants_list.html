@@ -1,0 +1,19 @@
+<ul class="unstyled">
+{% for variant in variants %}
+    {%  with price=variant.get_price %}
+    <li class="well">
+        <p>
+        {{ variant }}
+        <strong>({{ price.gross }}{% if price.currency %} {{ price.currency }}{%  endif %})</strong>
+        </p>
+        <form method="post" action="{{ action }}" class="form-inline">
+        {% csrf_token %}
+        <input type="hidden" name="variant_id" value="{{ variant.id }}" />
+        <label for="quantity">Quantity:</label>
+        <input type="text" id="quantity" name="quantity" value="1" class="input-mini" />
+        <input type="submit" class="btn btn-primary" value="Add to cart" />
+        </form>
+    </li>
+    {%  endwith %}
+{% endfor %}
+</ul>
