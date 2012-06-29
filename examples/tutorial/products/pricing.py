@@ -31,8 +31,7 @@ class VariantOffsetHandler(PricingHandler):
                                 **kwargs):
         return price_range
 
-
+pricing_handler = PricingQueue(ProductFieldGetter, VariantOffsetHandler,
+    SimpleQtyPricingHandler, FlatGroupPricingHandler)
 def get_price(variant, quantity=1):
-    handler = PricingQueue(ProductFieldGetter, VariantOffsetHandler,
-                           SimpleQtyPricingHandler, FlatGroupPricingHandler)
-    return handler.get_variant_price(variant, quantity=quantity)
+    return pricing_handler.get_variant_price(variant, quantity=quantity)
