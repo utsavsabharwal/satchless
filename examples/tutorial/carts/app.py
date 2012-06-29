@@ -2,7 +2,8 @@ from . import models
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
-from examples.tutorial.products.models import Variant
+from products.models import Variant
+from products.pricing import pricing_handler
 from satchless.cart.app import MagicCartApp
 from satchless.core.app import view
 from products.app import products_app
@@ -32,4 +33,4 @@ class CartApp(MagicCartApp):
         return redirect(redirect_url)
 
 
-cart_app = CartApp(product_app=products_app)
+cart_app = CartApp(product_app=products_app, pricing_handler=pricing_handler)
