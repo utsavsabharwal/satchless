@@ -18,7 +18,7 @@
             <td>{{ forloop.counter }}</td>
             <td>{{ item.variant.get_subtype_instance }}</td>
             <td>{{ item.quantity }}</td>
-            <td>{{ item.price.gross }} {{ cart.currency }}</td>
+            <td>{{ item.get_price.gross }} {{ cart.currency }}</td>
         </tr>
         {%  endfor %}
         </tbody>
@@ -27,7 +27,7 @@
                 <td></td><td></td>
                 <th>Total:</th>
                 <td class="numerical">
-                    {{ cart.total.gross }} <span class="currency">{{ cart.currency }}</span><br />
+                    {{ cart.get_total.gross }} <span class="currency">{{ cart.currency }}</span><br />
                 </td>
             </tr>
         </tfoot>

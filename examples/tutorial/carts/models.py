@@ -6,15 +6,13 @@ from satchless.util.models import construct
 
 
 class Cart(Cart):
-    def total(self, handler=pricing.pricing_handler):
-        print 'aaaaaaaaaaaaaaaaaa'
-        print ([item.price(handler) for item in self.get_all_items()])
+    def get_total(self, handler=pricing.pricing_handler):
         return sum(
-            [item.price(handler) for item in self.get_all_items()],
+            [item.get_price(handler) for item in self.get_all_items()],
             Price(0)
         )
 
 
 class CartItem(construct(CartItem, cart=Cart, variant=Variant)):
-    def price(self, handler=pricing.pricing_handler):
+    def get_price(self, handler=pricing.pricing_handler):
         return handler.get_variant_price(self.variant, quantity=self.quantity)
