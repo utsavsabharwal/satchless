@@ -2,15 +2,23 @@
 {% load i18n %}
 {% load cart_variants %}
 
+{% block title %}{{ block.super }} - {{ product.name }}{% endblock %}
+
 {% block content %}
     <h1>{{ product.name }}</h1>
-    {% if product.description %}
-    <div class="productDescription">
-        {{ product.description }}
+    <div class="row">
+        <div class="span3">
+            <a class="thumbnail" href="#">
+                <img alt="Test" src="http://placehold.it/260x180">
+            </a>
+        </div>
+        <div class="span6">
+        <p>{{ product.description }}</p>
+        </div>
     </div>
-    {% endif %}
+    <div class="page-header">
     <h2>Variants</h2>
-
+    </div>
     {#% variants_to_cart_forms variants product %#}
     
     {% variants_to_list variants product %}

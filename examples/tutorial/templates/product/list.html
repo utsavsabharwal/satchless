@@ -1,12 +1,32 @@
 {% extends 'index.html' %}
 {% load i18n %}
 
+{% block title %}{{ block.super }} - Products list{% endblock %}
+
 {% block content %}
-    <div id="product">
-        <ul>
-            {% for product in products %}
-            <li><a href="{{ product.get_absolute_url }}">{{ product }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
+<h1>Products list</h1>
+<table class="table table-bordered">
+<thead>
+  <tr>
+    <th style="width: 10px">#</th>
+    <th class="span2">Image</th>
+    <th>Name</th>
+    <th style="width: 100px">Price</th>
+  </tr>
+</thead>
+<tbody>
+{% for product in products %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td>
+    <a class="thumbnail" href="{{ product.get_absolute_url }}">
+        <img alt="" src="http://placehold.it/160x120">
+    </a>
+    </td>
+    <td><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></td>
+    <td>{{ product.price }}</td>
+  </tr>
+{% endfor %}
+</tbody>
+</table>
 {% endblock content %}
