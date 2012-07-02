@@ -1,12 +1,13 @@
+{% load cart_variants %}
 <ul class="unstyled">
 {% for variant in variants %}
-    {%  with price=variant.get_price %}
+    {% with price=variant.get_price %}
     <li class="well">
         <p>
         {{ variant }}
         <strong>({{ price.gross }}{% if price.currency %} {{ price.currency }}{%  endif %})</strong>
         </p>
-        <form method="post" action="{{ action }}" class="form-inline">
+        <form method="post" action="{% cart_form_target %}" class="form-inline">
         {% csrf_token %}
         <input type="hidden" name="variant_id" value="{{ variant.id }}" />
         <label for="quantity">Quantity:</label>
@@ -14,6 +15,6 @@
         <input type="submit" class="btn btn-primary" value="Add to cart" />
         </form>
     </li>
-    {%  endwith %}
+    {% endwith %}
 {% endfor %}
 </ul>

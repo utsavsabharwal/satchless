@@ -1,5 +1,6 @@
+{% load cart_variants %}
 {% for form in forms %}
-<form method="post" action="{{ action }}">
+<form method="post" action="{% cart_form_target %}">
     {% csrf_token %}
     {{form.as_p}}
     <input type="submit" class="btn" />
