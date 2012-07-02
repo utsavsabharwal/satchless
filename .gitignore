@@ -5,3 +5,4 @@
 *~
 doc/_build
 website/*.db
+local_settings.py

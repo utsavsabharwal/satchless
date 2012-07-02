@@ -159,3 +159,10 @@ SATCHLESS_PRICING_HANDLERS = [PricingCacheHandler(
         'sale.SalePricingHandler',
         lazy=True)
 ]
+
+
+
+try:
+    execfile(os.path.join(PROJECT_ROOT, 'local_settings.py'))
+except IOError:
+    pass
