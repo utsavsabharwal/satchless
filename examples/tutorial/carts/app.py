@@ -29,7 +29,7 @@ class CartApp(MagicCartApp):
             or request.META.get('HTTP_REFERER')
             or '')  # TODO it would be smarter to get product url or cart url
         try:
-            variant = Variant.objects.get(variant_id)
+            variant = Variant.objects.get(id=variant_id)
         except Variant.DoesNotExist:
             messages.error("No such variant.")
         else:
