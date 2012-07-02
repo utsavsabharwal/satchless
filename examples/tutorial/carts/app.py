@@ -2,6 +2,7 @@ from . import models
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 from products.models import Variant
 from products.pricing import pricing_handler
 from satchless.cart.app import MagicCartApp
@@ -27,9 +28,14 @@ class CartApp(MagicCartApp):
             post.get('redirect_url')
             or request.META.get('HTTP_REFERER')
             or '')  # TODO it would be smarter to get product url or cart url
-        variant = Variant.objects.get(variant_id)
-        variant = variant.get_subtype_instance()
-        cart.add_item(variant, quantity)
+        try:
+            variant = Variant.objects.get(variant_id)
+        except Variant.DoesNotExist:
+            messages.error("No such variant.")
+        else:
+            variant = variant.get_subtype_instance()
+            cart.add_item(variant, quantity)
+            messages.success(request, "Item added")
         return redirect(redirect_url)
 
 

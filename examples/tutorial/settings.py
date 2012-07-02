@@ -151,6 +151,8 @@ LOGGING = {
     }
 }
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
 SATCHLESS_DEFAULT_CURRENCY = 'PLN'
 from satchless.contrib.pricing.cache import PricingCacheHandler
 SATCHLESS_PRICING_HANDLERS = [PricingCacheHandler(
