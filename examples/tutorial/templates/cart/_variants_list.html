@@ -10,8 +10,11 @@
         <form method="post" action="{% cart_form_target %}" class="form-inline">
         {% csrf_token %}
         <input type="hidden" name="variant_id" value="{{ variant.id }}" />
-        <label for="quantity">Quantity:</label>
-        <input type="text" id="quantity" name="quantity" value="1" class="input-mini" />
+        <label for="quantity">Quantity:</label>        
+        <div class="input-append">
+            <input type="text" id="quantity" name="quantity" value="1" class="span2 input-mini">
+            <span class="add-on">/ {% if variant.stock %}{{ variant.stock }}{% else %}&infin;{%endif%}</span>
+        </div>
         <input type="submit" class="btn btn-primary" value="Add to cart" />
         </form>
     </li>

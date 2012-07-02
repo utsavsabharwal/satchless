@@ -1,8 +1,9 @@
+{% load cart_variants %}
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>Test</title>
+<title>{% block title %}Tutorial{% endblock %}</title>
 <link href="{{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.css">
         <!--[if lt IE 9]>
@@ -11,23 +12,78 @@
 </head>
 
 <body>
+   <div class="navbar navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/">Tutorial</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="/">Home</a></li>
+              <!-- li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li -->
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
     <div class="container">
         <div class="row">
-            <div class="span4">
-                <h2>Left</h2>
-                <p>Donec id elit non mi porta gravida at eget metus. Fusce
-                    dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
-                    ut fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                    magna mollis euismod. Donec sed odio dui.</p>
-                <p>
-                    <a class="btn" href="#">View details »</a>
-                </p>
+            <div class="span3">
+                {% cart %}
             </div>
-            <div class="span8">
-                <h2>Content</h2>
+            <div class="span9">
+                {% if messages %}
+                <ul class="unstyled">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                        <button class="close" data-dismiss="alert">×</button>
+                        {{ message }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
                 {% block content %}{% endblock %}
             </div>
         </div>
     </div>
+    
+  
+{% if debug %}
+<div id="debug" class="container">
+  <h2>Queries</h2>
+  <p>
+    {{ sql_queries|length }} Quer{{ sql_queries|pluralize:"y,ies" }}
+    {% ifnotequal sql_queries|length 0 %}
+    (<span style="cursor: pointer;" onclick="var s=document.getElementById('debugQueryTable').style;s.display=s.display=='none'?'':'none';this.innerHTML=this.innerHTML=='Show'?'Hide':'Show';">Show</span>)
+    {% endifnotequal %}
+  </p>
+  <table id="debugQueryTable" style="display: none;" class="table table-bordered">
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">SQL</th>
+      <th scope="col">Time</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for query in sql_queries %}<tr class="{% cycle odd,even %}">
+      <td>{{ forloop.counter }}</td>
+      <td>{{ query.sql|escape }}</td>
+      <td>{{ query.time }}</td>
+    </tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+    <script src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+    
 </body>
 </html>
+
