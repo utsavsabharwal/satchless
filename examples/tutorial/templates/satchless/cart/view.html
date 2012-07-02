@@ -1,0 +1,40 @@
+{% block title %}My cart{% endblock %}
+{% block breadcrumbs %}
+    <li><a href="">My cart</a></li>
+{% endblock %}
+{% block content %}
+    <h1>My cart</h1>
+    {% csrf_token %}
+    <table class="cart">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%  for item in cart.get_all_items %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.variant.get_subtype_instance }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price.gross }} {{ cart.currency }}</td>
+        </tr>
+        {%  endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="total">
+                <th colspan="4">Total:</th>
+                <td class="numerical">
+                    {{ cart_total }} <span class="currency">{{ cart.currency }}</span><br />
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    <form action="" method="post">
+        {% csrf_token %}
+        <button type="submit">Check out</button>
+    </form>
+{% endblock %}

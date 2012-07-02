@@ -1,4 +1,5 @@
 from products.models import Variant
+from products import pricing
 from satchless.cart.models import Cart, CartItem
 from satchless.util.models import construct
 
@@ -8,4 +9,7 @@ class Cart(Cart):
 
 
 class CartItem(construct(CartItem, cart=Cart, variant=Variant)):
-    pass
+    @property
+    def price(self, handler=pricing.pricing_handler):
+        return handler.get_variant_price(self.variant, quantity=self.quantity)
+
