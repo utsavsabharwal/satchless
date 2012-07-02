@@ -1,7 +1,5 @@
-{% block title %}My cart{% endblock %}
-{% block breadcrumbs %}
-    <li><a href="">My cart</a></li>
-{% endblock %}
+{%  extends "index.html" %}
+
 {% block content %}
     <h1>My cart</h1>
     {% csrf_token %}
@@ -26,9 +24,10 @@
         </tbody>
         <tfoot>
             <tr class="total">
-                <th colspan="4">Total:</th>
+                <td></td><td></td>
+                <th>Total:</th>
                 <td class="numerical">
-                    {{ cart_total }} <span class="currency">{{ cart.currency }}</span><br />
+                    {{ cart.total.gross }} <span class="currency">{{ cart.currency }}</span><br />
                 </td>
             </tr>
         </tfoot>
