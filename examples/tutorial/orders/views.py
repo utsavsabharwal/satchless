@@ -16,5 +16,5 @@ def thank_you_page(request, order_token):
         'order': order,
         })
 
-def payment_failed(request, _order_token):
+def payment_failed(request, order_token):
     return TemplateResponse(request, 'order/payment_failed.html')

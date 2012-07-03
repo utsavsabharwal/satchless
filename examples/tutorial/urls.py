@@ -17,6 +17,6 @@ urlpatterns = patterns('',
     url(r'^checkout/', include(checkout_app.urls)),
     url(r'^payment-gateways/django-payments/', include('payments.urls')),
     url(r'^thankyou/(?P<order_token>\w+)/$', orders.views.thank_you_page, name='thank-you'),
-    url(r'^failed/(?P<order_token>\w+)/$', orders.views.thank_you_page, name='payment-failed'),
+    url(r'^failed/(?P<order_token>\w+)/$', orders.views.payment_failed, name='payment-failed'),
 
 )
