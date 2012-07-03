@@ -1,5 +1,7 @@
 # Django settings for tutorial project.
 import os
+from django.core.urlresolvers import reverse
+
 PROJECT_ROOT = os.path.dirname( __file__ )
 
 DEBUG = True
@@ -122,11 +124,15 @@ INSTALLED_APPS = (
     #'satchless.pricing',
     #'satchless.product',
     'satchless.contrib.tax.flatgroups',
+    'satchless.contrib.delivery.simplepost',
     #'satchless.cart',
 
     'products',
     'categories',
     'carts',
+    'orders',
+    'tutorial_payments',
+    'payments',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -174,6 +180,14 @@ SATCHLESS_PRICING_HANDLERS = [PricingCacheHandler(
         'sale.SalePricingHandler',
         lazy=True)
 ]
+
+SATCHLESS_DJANGO_PAYMENT_TYPES = (('dummy', 'Dummy Payment Provider'),)
+PAYMENT_VARIANTS = {
+    'dummy': ('payments.dummy.DummyProvider', {
+        'url': lambda payment: reverse('thank-you',
+            args=(payment.satchless_payment_variant.order.token,))
+    })
+}
 
 
 

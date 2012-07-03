@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+{% block content %}
+    {% if order %}
+    <form method="post" action="">{% csrf_token %}
+        {{ billing_form }}
+        {{ shipping_formset.management_form }}
+        {% for form in shipping_formset.forms %}{% with form.instance as group %}
+          {% if order.groups.count > 1 %}
+            <ul>
+            {% include 'satchless/checkout/snippets/delivery_group.html' %}
+            </ul>
+          {%  else %}
+              order.groups
+          {% endif %}
+            {{ form.as_p }}
+        {% endwith %}{% endfor %}
+    <button type="submit">"Proceed</button>
+    </form>
+    {% else %}
+    <p>
+    Profound emptiness is gazing at you from the bottom of the cart. You turn back swiftly and
+    <a href="/">continue shopping</a>.
+    {% endif %}
+{% endblock %}
