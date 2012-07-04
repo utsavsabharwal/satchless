@@ -1,23 +1,55 @@
 {% load cart_variants %}
+<style>
+.cart {
+    border-bottom: 1px solid #eee;
+    margin: 5px 0;
+    padding-bottom: 5px;
+}
+.cart_total {
+    text-align: right;
+    padding-right: 60px;
+    margin-bottom: 10px;
+}
+.cart_remove {
+    float: right;
+    margin-right: 10px;
+}
+
+.cart ul li{
+    margin-bottom: 5px;
+}
+
+.cart form {
+    float: right;
+}
+
+.cart form input, .cart form {
+	margin: 0;
+    padding: 0;
+}
+</style>
 <h2>Cart</h2>
-<div class="page-header">
+<div class="cart">
     <ul>
     {% for item in items %}
         {% with price=item.variant.get_price %}
-        <li style="margin-bottom: 5px;">
+        <li>
             {{ item }}
             <strong>
             ({{ price.gross }}{% if price.currency %} {{ price.currency }}{%  endif %})
             </strong>
-            <form method="post" action="" style="display:inline">
+            <form method="post" action="{% cart_remove_item_target item %}">
                 {% csrf_token %}
-                <input type="hidden" name="item_pk" value="{{ item.variant.id }}" />
-                <button class="btn btn-mini btn-danger"><i class="icon-remove icon-white"></i></button>
+                <input type="image" class="icon-remove-sign" value="" />
             </form>
         </li>
         {% endwith %}
     {% endfor %}
     </ul>
 </div>
-    <a href="{% cart_target %}" class="btn btn-success"><i class="icon-shopping-cart icon-white"></i> Checkout</a>
+    <div class="cart_total">
+        <strong>{{ total.gross }}</strong>
+    </div>
     <a href="#" class="btn btn-warning"><i class="icon-trash icon-white"></i> Clear </a>
+    <a href="{% cart_target %}" class="btn btn-success"><i class="icon-shopping-cart icon-white"></i> Checkout</a>
+    
