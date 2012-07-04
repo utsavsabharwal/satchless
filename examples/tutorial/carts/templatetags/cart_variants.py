@@ -23,9 +23,13 @@ def cart_form_target():
 def cart_target():
     return cart_app.reverse('details')
 
+@register.simple_tag
+def cart_remove_item_target(item):
+    return cart_app.reverse('remove-item', kwargs = {'item_pk':item.variant_id})
+
 @register.inclusion_tag('cart/_view.html', takes_context = True)
 def cart(context):
     if 'request' not in context:
         return
     cart = cart_app.get_cart_for_request(context['request'])
-    return {'items': cart.get_all_items()}
+    return {'items': cart.get_all_items(), 'total':cart.get_total()}

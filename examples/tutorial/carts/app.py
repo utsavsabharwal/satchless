@@ -20,23 +20,36 @@ class CartApp(MagicCartApp):
         cart = self.get_cart_for_request(request)
         post = request.POST
         variant_id = int(post.get('variant_id'))
-        try:
-            quantity = int(post.get('quantity'))
-        except ValueError:
-            quantity = 1
+        quantity = post.get('quantity')
+
         redirect_url = (
             post.get('redirect_url')
             or request.META.get('HTTP_REFERER')
             or '')  # TODO it would be smarter to get product url or cart url
+        
         try:
             variant = Variant.objects.get(id=variant_id)
         except Variant.DoesNotExist:
             messages.error("No such variant.")
         else:
             variant = variant.get_subtype_instance()
-            cart.add_item(variant, quantity)
-            messages.success(request, "Item added")
+            
+            if not quantity.isdigit() or not quantity > 0:
+                messages.error(request, "%s is wrong quantity."%(quantity))
+            elif hasattr(variant, 'stock') and variant.stock < int(quantity):
+                messages.warning(request, "You can order only %s %s (%s)."%(
+                                 variant.stock, variant.product.name, variant))
+            else:
+                cart.add_item(variant, int(quantity))
+                messages.success(request, "Item added - %s (%s)."%(
+                                                variant.product.name, variant))
         return redirect(redirect_url)
 
+    @view(r'^remove/(?P<item_pk>[0-9]+)/$', name='remove-item')
+    @method_decorator(require_POST)
+    def remove_item(self, request, item_pk):
+        response = super(CartApp, self).remove_item(request, item_pk)
+        messages.success(request, 'Item removed')
+        return redirect(request.META.get('HTTP_REFERER'))
 
 cart_app = CartApp(product_app=products_app, pricing_handler=pricing_handler)

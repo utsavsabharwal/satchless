@@ -1,9 +1,6 @@
-import satchless.category.app
-from satchless.pricing.app import ProductAppPricingMixin
 from satchless.product.app import ProductApp
 from satchless.core.app import view
 
-from . import models
 from handler import VariantsHandler
 from products.models import Product, Variant
 
