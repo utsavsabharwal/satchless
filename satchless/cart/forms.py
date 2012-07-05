@@ -48,6 +48,8 @@ class AddToCartForm(forms.Form, QuantityForm):
         return self.cart.add_item(self.get_variant(),
                                   self.cleaned_data['quantity'])
 
+    def get_variant(self):
+        raise NotImplementedError()
 
 class EditCartItemForm(forms.ModelForm, QuantityForm):
     request_marker = forms.CharField(widget=forms.HiddenInput(), required=False)
@@ -85,6 +87,6 @@ def add_to_cart_variant_form_for_product(product,
                                          addtocart_formclass=AddToCartForm,
                                          registry=registry):
     variant_formclass = registry.get_handler(type(product))
-    class AddVariantToCartForm(addtocart_formclass, variant_formclass):
+    class AddVariantToCartForm(variant_formclass, addtocart_formclass):
         pass
     return AddVariantToCartForm

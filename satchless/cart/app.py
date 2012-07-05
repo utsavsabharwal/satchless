@@ -18,7 +18,6 @@ class CartApp(SatchlessApp):
 
     app_name = 'cart'
     namespace = 'cart'
-    cart_type = 'cart'
     CartItemForm = None
     Cart = None
 
@@ -89,8 +88,30 @@ class CartApp(SatchlessApp):
         cart.replace_item(item.variant, 0)
         return self.redirect('details')
 
+class BasicMagicCartApp(SatchlessApp):
+    # for backward compatibility
+    cart_type = 'cart'
+    Cart = None
+    
+    def get_cart_for_request(self, request):
+        try:
+            token = request.session[self.cart_session_key]
+            cart = self.Cart.objects.get(typ=self.cart_type,
+                                         token=token)
+        except (self.Cart.DoesNotExist, KeyError):
+            owner = request.user if request.user.is_authenticated() else None
+            cart = self.Cart.objects.create(typ=self.cart_type, owner=owner)
+            request.session[self.cart_session_key] = cart.token
+        if cart.owner is None and request.user.is_authenticated():
+            cart.owner = request.user
+            cart.save()
+        return cart
 
-class MagicCartApp(CartApp):
+    @property
+    def cart_session_key(self):
+        return '_satchless_cart-%s' % self.cart_type
+
+class MagicCartApp(BasicMagicCartApp, CartApp):
 
     CartItem = None
     AddToCartHandler = handler.AddToCartHandler
@@ -132,21 +153,3 @@ class MagicCartApp(CartApp):
                 model = cart_item_class
 
         return EditCartItemForm
-
-    @property
-    def cart_session_key(self):
-        return '_satchless_cart-%s' % self.cart_type
-
-    def get_cart_for_request(self, request):
-        try:
-            token = request.session[self.cart_session_key]
-            cart = self.Cart.objects.get(typ=self.cart_type,
-                                         token=token)
-        except (self.Cart.DoesNotExist, KeyError):
-            owner = request.user if request.user.is_authenticated() else None
-            cart = self.Cart.objects.create(typ=self.cart_type, owner=owner)
-            request.session[self.cart_session_key] = cart.token
-        if cart.owner is None and request.user.is_authenticated():
-            cart.owner = request.user
-            cart.save()
-        return cart

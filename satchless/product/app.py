@@ -8,7 +8,7 @@ from ..core.app import SatchlessApp, view
 from ..util import JSONResponse
 
 from . import models
-from ..cart import forms
+from ..cart import forms, signals, app
 
 class ProductApp(SatchlessApp):
 
@@ -55,10 +55,12 @@ class ProductApp(SatchlessApp):
         self.product_view_handlers_queue.add(handler)
 
 
-class ProductAppWithFormCart(ProductApp):
-    def __init__(self, addtocart_formclass=forms.AddToCartForm, *args, **kwargs):
-        super(ProductAppWithFormCart, self).__init__(*args, **kwargs)
+class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
+    def __init__(self, cart_class, addtocart_formclass=forms.AddToCartForm,
+                 *args, **kwargs):
+        super(ProductWithAddToCartFormApp, self).__init__(*args, **kwargs)
         self.addtocart_formclass = addtocart_formclass
+        self.Cart = cart_class
         
     @view(r'^\+(?P<product_pk>[0-9]+)-(?P<product_slug>[a-z0-9_-]+)/$',
           name='details')
@@ -67,30 +69,43 @@ class ProductAppWithFormCart(ProductApp):
             product = self.get_product(request, **kwargs)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
-
+        cart = self.get_cart_for_request(request)
         Form = forms.add_to_cart_variant_form_for_product(product,
                     addtocart_formclass=self.addtocart_formclass)
         # TODO: remove hardcoded type
-        form = Form(initial=request.POST, product=product, typ='cart')
+        if request.method == 'POST':
+            form = Form(request.POST, product=product, cart=cart, typ='cart')
+        else:
+            form = Form(product=product, cart=cart, typ='cart')
+        
+        response = super(ProductWithAddToCartFormApp, self).product_details(
+        request, extra_context={'cart_form':form}, product=product, **kwargs)
+
         if form.is_valid():
             form_result = form.save()
-            self.cart_item_added(form_result)
+            #self.cart_item_added(request, form_result)
             if request.is_ajax():
                 # FIXME: add cart details like number of items and new total
-                return JSONResponse({})
-            return redirect(self.reverse('details',
-               kwargs = {'product_pk':product.id, 'product_slug':product.slug}))
+                response = JSONResponse({})
+            else:
+                response = redirect(self.reverse('details',
+                                             kwargs = {'product_pk':product.id,
+                                            'product_slug':product.slug}))
         elif request.is_ajax() and form.errors:
             data = dict(form.errors)
-            return JSONResponse(data, status=400)
+            response = JSONResponse(data, status=400)
 
-        return super(ProductAppWithFormCart, self).product_details(request,
-                  extra_context={'cart_form':form}, product=product, **kwargs)
-        
-    def cart_item_added(self, form_result):
-        pass
+        print form.errors
+        return response
 
-class MagicProductApp(ProductApp):
+    def cart_item_added(self, request, form_result):
+        signals.cart_item_added.send(sender=type(form_result.cart_item),
+                                                 instance=form_result.cart_item,
+                                                 result=form_result,
+                                                 request=request)
+
+
+class MagicProductApp(ProductWithAddToCartFormApp):
 
     def __init__(self, **kwargs):
         self.Product = (self.Product or

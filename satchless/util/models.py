@@ -15,6 +15,12 @@ class SubtypedManager(models.Manager):
                     for s in self.find_subclasses(child):
                         yield '%s__%s' % (a, s)
 
+    def filter_by_subclasses(self, *args):
+        subtypes = []
+        for klass in args:
+            subtypes.append(subtype_path(klass))
+            
+        return self.filter(subtype_attr__in=subtypes)
     # https://code.djangoproject.com/ticket/16572
     #def get_query_set(self):
     #    qs = super(SubtypedManager, self).get_query_set()
@@ -23,6 +29,15 @@ class SubtypedManager(models.Manager):
     #        return qs.select_related(*subclasses)
     #    return qs
 
+def subtype_path(klass):
+    path = [klass]
+    parents = klass._meta.parents.keys()
+    while parents:
+        parent = parents[0]
+        path.append(parent)
+        parents = parent._meta.parents.keys()
+    path = [p._meta.module_name for p in reversed(path)]
+    return ' '.join(path)
 
 class Subtyped(models.Model):
     subtype_attr = models.CharField(max_length=500, editable=False)
