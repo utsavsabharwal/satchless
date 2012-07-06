@@ -15,11 +15,11 @@ from ..util.models import construct
 
 
 class CartApp(SatchlessApp):
-
+    cart_type = 'cart'
     app_name = 'cart'
     namespace = 'cart'
     CartItemForm = None
-    Cart = None
+
 
     cart_templates = [
         'satchless/cart/%(cart_type)s/view.html',
@@ -29,7 +29,6 @@ class CartApp(SatchlessApp):
     def __init__(self, pricing_handler, *args, **kwargs):
         self.pricing_handler = pricing_handler
         super(CartApp, self).__init__(*args, **kwargs)
-        assert self.Cart, ('You need to subclass CartApp and provide Cart')
         assert self.CartItemForm, ('You need to subclass CartApp and'
                                    ' provide CartItemForm')
 
@@ -92,6 +91,10 @@ class BasicMagicCartApp(SatchlessApp):
     # for backward compatibility
     cart_type = 'cart'
     Cart = None
+    
+    def __init__(self, *args, **kwargs):
+        super(BasicMagicCartApp, self).__init__(*args, **kwargs)
+        assert self.Cart, ('You need to subclass CartApp and provide Cart')
     
     def get_cart_for_request(self, request):
         try:

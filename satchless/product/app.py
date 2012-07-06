@@ -44,8 +44,8 @@ class ProductApp(SatchlessApp):
                 return HttpResponseNotFound()
             
         context = dict(extra_context)
-        context['variants'] = [variant.get_subtype_instance() for variant in
-                self.Variant.objects.filter(product = product)]
+        #context['variants'] = [variant.get_subtype_instance() for variant in
+        #        self.Variant.objects.filter(product = product)]
         context['product'] = product
         context = self.get_context_data(request, **context)
         templates = self.get_product_details_templates(product)
@@ -56,11 +56,10 @@ class ProductApp(SatchlessApp):
 
 
 class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
-    def __init__(self, cart_class, addtocart_formclass=forms.AddToCartForm,
-                 *args, **kwargs):
+    
+    def __init__(self, addtocart_formclass=forms.AddToCartForm, *args, **kwargs):
         super(ProductWithAddToCartFormApp, self).__init__(*args, **kwargs)
         self.addtocart_formclass = addtocart_formclass
-        self.Cart = cart_class
         
     @view(r'^\+(?P<product_pk>[0-9]+)-(?P<product_slug>[a-z0-9_-]+)/$',
           name='details')
@@ -74,9 +73,9 @@ class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
                     addtocart_formclass=self.addtocart_formclass)
         # TODO: remove hardcoded type
         if request.method == 'POST':
-            form = Form(request.POST, product=product, cart=cart, typ='cart')
+            form = Form(request.POST, product=product, cart=cart, typ=cart.typ)
         else:
-            form = Form(product=product, cart=cart, typ='cart')
+            form = Form(product=product, cart=cart, typ=cart.typ)
         
         response = super(ProductWithAddToCartFormApp, self).product_details(
         request, extra_context={'cart_form':form}, product=product, **kwargs)
@@ -104,15 +103,14 @@ class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
                                                  result=form_result,
                                                  request=request)
 
-
-class MagicProductApp(ProductWithAddToCartFormApp):
-
-    def __init__(self, **kwargs):
+class BaseMagicProductApp(object):
+    def __init__(self, *args, **kwargs):
         self.Product = (self.Product or
                         self.construct_product_class())
         self.Variant = (self.Variant or
                         self.construct_variant_class(self.Product))
-        super(MagicProductApp, self).__init__(**kwargs)
+
+        super(BaseMagicProductApp, self).__init__(*args, **kwargs)
 
     def construct_product_class(self):
         class Product(models.Product):
@@ -123,3 +121,11 @@ class MagicProductApp(ProductWithAddToCartFormApp):
         class Variant(models.Variant):
             pass
         return Variant
+
+
+class MagicProductApp(BaseMagicProductApp, ProductApp):
+    pass
+
+class MagicProductWithAddToCartFormApp(BaseMagicProductApp,
+                                       ProductWithAddToCartFormApp):
+    pass

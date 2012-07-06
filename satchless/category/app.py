@@ -8,6 +8,7 @@ from ..product import models as product_models
 from ..util.models import construct
 from . import models
 
+
 class CategorizedProductApp(app.ProductApp):
 
     app_name = 'category'
@@ -108,7 +109,6 @@ class CategorizedProductApp(app.ProductApp):
 
 
 class MagicCategorizedProductApp(CategorizedProductApp, app.MagicProductApp):
-
     def __init__(self, **kwargs):
         self.Category = (self.Category or
                          self.construct_category_class())
