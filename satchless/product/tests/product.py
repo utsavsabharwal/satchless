@@ -12,6 +12,12 @@ from ...util.tests import ViewsTestCase
 from ..app import MagicProductApp
 from ..forms import FormRegistry, variant_form_for_product
 
+from ...cart.models import Cart
+
+# recursive import issue
+class TestCart(Cart):
+    pass
+
 from . import (Parrot, ParrotVariant, DeadParrot, Cheese,
                DeadParrotVariant, ZombieParrot, DeadParrotVariantForm)
 
@@ -21,10 +27,8 @@ __all__ = ['Models', 'Registry', 'Views', 'product_app']
 class TestProductApp(MagicProductApp):
     Product = Parrot
     Variant = ParrotVariant
-
-
+    Cart = TestCart
 product_app = TestProductApp()
-
 
 class urls:
     urlpatterns = patterns('',

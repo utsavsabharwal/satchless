@@ -6,7 +6,7 @@ from django.test import Client
 import os
 
 from ...pricing.app import ProductAppPricingMixin
-from ...product.app import MagicProductApp
+from ...product.app import MagicProductWithAddToCartFormApp
 from ...product.tests.pricing import FiveZlotyPriceHandler
 from ...product.tests import Parrot, ParrotVariant, DeadParrot, ZombieParrot, DeadParrotVariantForm
 from ...util.tests import ViewsTestCase
@@ -15,10 +15,11 @@ from .. import app
 from . import TestCart, TestCartItem
 
 
-class TestProductApp(ProductAppPricingMixin, MagicProductApp):
+class TestProductApp(ProductAppPricingMixin, MagicProductWithAddToCartFormApp):
 
     Product = Parrot
     Variant = ParrotVariant
+    Cart = TestCart
 
 product_app = TestProductApp(pricing_handler=FiveZlotyPriceHandler())
 
@@ -88,14 +89,14 @@ class MagicAppTestCase(ViewsTestCase):
     def test_add_to_cart_form_on_product_view(self):
         response = self._test_status(self.macaw.get_absolute_url(),
                                      method='get', status_code=200)
-        self.assertTrue(isinstance(response.context['product'].cart_form,
+        self.assertTrue(isinstance(response.context['cart_form'],
                         DeadParrotVariantForm))
 
         zombie = ZombieParrot.objects.create(slug='zombie-parrot',
                                              species='Zombie Parrot')
         response = self._test_status(zombie.get_absolute_url(),
                                      method='get', status_code=200)
-        self.assertTrue(isinstance(response.context['product'].cart_form,
+        self.assertTrue(isinstance(response.context['cart_form'],
                         DeadParrotVariantForm))
 
     def _test_add_by_view(self, client):
@@ -170,6 +171,6 @@ class MagicAppTestCase(ViewsTestCase):
                                            'quantity': 'alkjl'},
                                      client_instance=cli_anon,
                                      status_code=200)
-        errors = response.context['product'].cart_form.errors
+        errors = response.context['cart_form'].errors
         self.assertTrue('quantity' in errors)
 
