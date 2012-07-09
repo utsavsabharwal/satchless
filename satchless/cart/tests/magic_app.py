@@ -16,7 +16,7 @@ from . import TestCart, TestCartItem
 
 
 class TestProductApp(ProductAppPricingMixin, MagicProductWithAddToCartFormApp):
-
+    cart_type = 'test_cart_app'
     Product = Parrot
     Variant = ParrotVariant
     Cart = TestCart

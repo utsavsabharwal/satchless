@@ -71,31 +71,30 @@ class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
         cart = self.get_cart_for_request(request)
         Form = forms.add_to_cart_variant_form_for_product(product,
                     addtocart_formclass=self.addtocart_formclass)
-        # TODO: remove hardcoded type
+        # TODO: remove type from cart
         if request.method == 'POST':
-            form = Form(request.POST, product=product, cart=cart, typ=cart.typ)
+            form = Form(data=request.POST, product=product, cart=cart,
+                                                                  typ=cart.typ)
+
+            if form.is_valid():
+                form_result = form.save()
+                #self.cart_item_added(request, form_result)
+                if request.is_ajax():
+                    # FIXME: add cart details like number of items and new total
+                    return JSONResponse({})
+                else:
+                    return redirect(self.reverse('details',
+                                            kwargs = {'product_pk':product.id,
+                                            'product_slug':product.slug}))
+            elif request.is_ajax() and form.errors:
+                data = dict(form.errors)
+                return JSONResponse(data, status=400)
+
         else:
             form = Form(product=product, cart=cart, typ=cart.typ)
-        
-        response = super(ProductWithAddToCartFormApp, self).product_details(
-        request, extra_context={'cart_form':form}, product=product, **kwargs)
 
-        if form.is_valid():
-            form_result = form.save()
-            #self.cart_item_added(request, form_result)
-            if request.is_ajax():
-                # FIXME: add cart details like number of items and new total
-                response = JSONResponse({})
-            else:
-                response = redirect(self.reverse('details',
-                                             kwargs = {'product_pk':product.id,
-                                            'product_slug':product.slug}))
-        elif request.is_ajax() and form.errors:
-            data = dict(form.errors)
-            response = JSONResponse(data, status=400)
-
-        print form.errors
-        return response
+        return super(ProductWithAddToCartFormApp, self).product_details(
+           request, extra_context={'cart_form':form}, product=product, **kwargs)
 
     def cart_item_added(self, request, form_result):
         signals.cart_item_added.send(sender=type(form_result.cart_item),
