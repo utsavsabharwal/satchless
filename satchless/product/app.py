@@ -56,7 +56,7 @@ class ProductApp(SatchlessApp):
 
 
 class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
-    
+
     def __init__(self, addtocart_formclass=forms.AddToCartForm, *args, **kwargs):
         super(ProductWithAddToCartFormApp, self).__init__(*args, **kwargs)
         self.addtocart_formclass = addtocart_formclass
@@ -71,14 +71,13 @@ class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
         cart = self.get_cart_for_request(request)
         Form = forms.add_to_cart_variant_form_for_product(product,
                     addtocart_formclass=self.addtocart_formclass)
-        # TODO: remove type from cart
+
         if request.method == 'POST':
-            form = Form(data=request.POST, product=product, cart=cart,
-                                                                  typ=cart.typ)
+            form = Form(data=request.POST, product=product, cart=cart)
 
             if form.is_valid():
                 form_result = form.save()
-                #self.cart_item_added(request, form_result)
+                self.cart_item_added(request, form_result)
                 if request.is_ajax():
                     # FIXME: add cart details like number of items and new total
                     return JSONResponse({})
@@ -91,7 +90,7 @@ class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
                 return JSONResponse(data, status=400)
 
         else:
-            form = Form(product=product, cart=cart, typ=cart.typ)
+            form = Form(product=product, cart=cart)
 
         return super(ProductWithAddToCartFormApp, self).product_details(
            request, extra_context={'cart_form':form}, product=product, **kwargs)
@@ -103,6 +102,7 @@ class ProductWithAddToCartFormApp(ProductApp, app.BasicMagicCartApp):
                                                  request=request)
 
 class BaseMagicProductApp(object):
+
     def __init__(self, *args, **kwargs):
         self.Product = (self.Product or
                         self.construct_product_class())
@@ -123,8 +123,10 @@ class BaseMagicProductApp(object):
 
 
 class MagicProductApp(BaseMagicProductApp, ProductApp):
+
     pass
 
 class MagicProductWithAddToCartFormApp(BaseMagicProductApp,
                                        ProductWithAddToCartFormApp):
+
     pass

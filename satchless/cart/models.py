@@ -25,7 +25,6 @@ class QuantityResult(object):
 class Cart(models.Model):
 
     owner = models.ForeignKey(User, null=True, blank=True, related_name='+')
-    typ = models.CharField(_("type"), max_length=100)
     currency = models.CharField(_("currency"), max_length=3,
                                 default=get_default_currency)
     token = models.CharField(max_length=32, blank=True, default='')
@@ -35,9 +34,9 @@ class Cart(models.Model):
 
     def __unicode__(self):
         if self.owner:
-            return u"%s of %s" % (self.typ, self.owner.username)
+            return u"%s" % self.owner.username
         else:
-            return self.typ
+            return u'Guest'
 
     def save(self, *args, **kwargs):
         if not self.token:

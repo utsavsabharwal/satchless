@@ -15,14 +15,13 @@ from ..util.models import construct
 
 
 class CartApp(SatchlessApp):
-    cart_type = 'cart'
+
     app_name = 'cart'
     namespace = 'cart'
     CartItemForm = None
 
 
-    cart_templates = [
-        'satchless/cart/%(cart_type)s/view.html',
+    cart_template = [
         'satchless/cart/view.html'
     ]
 
@@ -36,7 +35,8 @@ class CartApp(SatchlessApp):
         raise NotImplementedError()
 
     def _get_cart_item_form(self, request, item):
-        prefix = '%s-%i' % (self.cart_type, item.id)
+        #TODO: unknown functionality of prefix
+        prefix = '%s-%i' % (u'cart', item.id)
         form = self.CartItemForm(data=request.POST or None,
                                  instance=item,
                                  prefix=prefix)
@@ -66,11 +66,8 @@ class CartApp(SatchlessApp):
             return context
         context = self.get_context_data(
             request, pricing_handler=self.pricing_handler, **context)
-        format_data = {
-            'cart_type': self.cart_type,
-        }
-        templates = [t % format_data for t in self.cart_templates]
-        response = TemplateResponse(request, templates, context)
+
+        response = TemplateResponse(request, self.cart_template, context)
         if request.is_ajax():
             return JSONResponse({'total': len(cart.get_all_items()),
                                  'html': response.rendered_content})
@@ -88,8 +85,6 @@ class CartApp(SatchlessApp):
         return self.redirect('details')
 
 class BasicMagicCartApp(SatchlessApp):
-    # for backward compatibility
-    cart_type = 'cart'
     Cart = None
     
     def __init__(self, *args, **kwargs):
@@ -99,11 +94,10 @@ class BasicMagicCartApp(SatchlessApp):
     def get_cart_for_request(self, request):
         try:
             token = request.session[self.cart_session_key]
-            cart = self.Cart.objects.get(typ=self.cart_type,
-                                         token=token)
+            cart = self.Cart.objects.get(token=token)
         except (self.Cart.DoesNotExist, KeyError):
             owner = request.user if request.user.is_authenticated() else None
-            cart = self.Cart.objects.create(typ=self.cart_type, owner=owner)
+            cart = self.Cart.objects.create(owner=owner)
             request.session[self.cart_session_key] = cart.token
         if cart.owner is None and request.user.is_authenticated():
             cart.owner = request.user
@@ -112,7 +106,7 @@ class BasicMagicCartApp(SatchlessApp):
 
     @property
     def cart_session_key(self):
-        return '_satchless_cart-%s' % self.cart_type
+        return '_satchless_cart'
 
 class MagicCartApp(BasicMagicCartApp, CartApp):
 

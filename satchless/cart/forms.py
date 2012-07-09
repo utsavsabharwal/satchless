@@ -22,15 +22,10 @@ class AddToCartForm(forms.Form, QuantityForm):
     """
 
     quantity = forms.DecimalField(_('Quantity'), initial=1)
-    typ = forms.CharField(max_length=100, widget=forms.HiddenInput())
 
     def __init__(self, data=None, *args, **kwargs):
-        typ = kwargs.pop('typ')
-        if data and data.get('typ') != typ:
-            data = None
         self.cart = kwargs.pop('cart', None)
         super(AddToCartForm, self).__init__(data=data, *args, **kwargs)
-        self.fields['typ'].initial = typ
 
     def clean(self):
         data = super(AddToCartForm, self).clean()
