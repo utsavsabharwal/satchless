@@ -6,3 +6,15 @@ For more information check:
 * "the homepage":http://satchless.com
 * "the docs":http://docs.satchless.com
 * and "the mailing list":http://groups.google.com/group/satchless
+
+Steps to be followed:
+sudo easy_install django-localeurl
+python setup.py install
+Go to examples/demo/
+python manage.py runserver
+
+How to Install?
+
+
+You would need following:
+sudo easy_install django-localeurl
